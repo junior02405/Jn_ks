@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Página do Casal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #181818; /* Fundo escuro */
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .container {
+      max-width: 500px;
+      text-align: center;
+      background-color: #202020; /* Fundo do container */
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.5s ease-out;
+    }
+
+    h1 {
+      color: #ff5370; /* Vermelho vibrante */
+      animation: fadeIn 1s ease-out;
+    }
+
+    .imagem img {
+      width: 100%;
+      border-radius: 8px;
+      margin: 10px 0;
+      opacity: 0;
+      animation: fadeInImage 0.8s forwards;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: center;
+      animation: fadeIn 1.5s ease-out;
+    }
+
+    .gallery img {
+      width: 100px;
+      height: auto;
+      border-radius: 8px;
+      opacity: 0;
+      animation: fadeInImage 0.8s forwards;
+    }
+
+    .form {
+      margin-top: 20px;
+      animation: fadeIn 2s ease-out;
+    }
+
+    .form input, .form textarea, .form button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .form input, .form textarea {
+      background-color: #2a2a2a; /* Fundo escuro para os inputs */
+      color: #ffffff;
+    }
+
+    .form button {
+      background-color: #ff5370; /* Vermelho vibrante */
+      color: #ffffff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .form button:hover {
+      background-color: #e1465d; /* Vermelho mais escuro */
+    }
+
+    #contador {
+      font-size: 1.5rem;
+      color: #ff5370; /* Vermelho vibrante */
+      margin-top: 20px;
+    }
+
+    /* Animações */
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInImage {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes slideUp {
+      0% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="audio" autoplay loop>
+    <source id="audioSource" type="audio/mp3">
+    Seu navegador não suporta a reprodução de áudio.
+  </audio>
+
+  <div class="container">
+    <h1 id="titulo">❤️ Junior & Kassiele ❤️</h1>
+    <div id="contador">Carregando contador...</div>
+    <div class="gallery" id="gallery"></div>
+
+    <form class="form">
+      <input type="text" id="nome" placeholder="Digite o nome do casal (Ex: Junior & Kassiele)" />
+      <textarea id="mensagemInput" placeholder="Digite sua mensagem de amor (Ex: Te amo)"></textarea>
+      <input type="date" id="dataInicio" />
+      <input type="file" id="imagemInput" accept="image/*" multiple />
+      <input type="file" id="musicaInput" accept="audio/*" />
+      <button type="button" onclick="atualizarPagina()">Atualizar Página</button>
+    </form>
+  </div>
+
+  <script>
+    let dataInicio = new Date("2024-12-12T00:00:00");
+
+    window.onload = function() {
+      carregarDadosLocalStorage(); // Carregar os dados salvos
+      setInterval(atualizarContador, 1000); // Atualizar o contador a cada segundo
+    };
+
+    function carregarDadosLocalStorage() {
+      const nome = localStorage.getItem('nome');
+      const mensagem = localStorage.getItem('mensagem');
+      const dataInicioArmazenada = localStorage.getItem('dataInicio');
+
+      if (nome) document.getElementById("nome").value = nome;
+      if (mensagem) document.getElementById("mensagemInput").value = mensagem;
+      if (dataInicioArmazenada) {
+        document.getElementById("dataInicio").value = dataInicioArmazenada;
+        dataInicio = new Date(dataInicioArmazenada + "T00:00:00");
+      }
+
+      const imagensArray = JSON.parse(localStorage.getItem('imagens')) || [];
+      const gallery = document.getElementById("gallery");
+      gallery.innerHTML = "";
+      imagensArray.forEach(imgSrc => {
+        const img = document.createElement("img");
+        img.src = imgSrc;
+        gallery.appendChild(img);
+      });
+
+      const musica = localStorage.getItem('musica');
+      if (musica) {
+        const audioSource = document.getElementById("audioSource");
+        audioSource.src = musica;
+        const audio = document.getElementById("audio");
+        audio.load();
+        audio.play();
+      }
+    }
+
+    function atualizarContador() {
+      const agora = new Date();
+      const diferença = agora - dataInicio;
+
+      const anos = Math.floor(diferença / (1000 * 60 * 60 * 24 * 365.25));
+      const dias = Math.floor((diferença / (1000 * 60 * 60 * 24)) % 365.25);
+      const horas = Math.floor((diferença / (1000 * 60 * 60)) % 24);
+      const minutos = Math.floor((diferença / (1000 * 60)) % 60);
+      const segundos = Math.floor((diferença / 1000) % 60);
+
+      document.getElementById("contador").innerText =
+        `Juntos há: ${anos} anos, ${dias} dias, ${horas} horas, ${minutos} minutos e ${segundos} segundos`;
+    }
+
+    function atualizarPagina() {
+      const nome = document.getElementById("nome").value;
+      if (nome) {
+        document.getElementById("titulo").innerText = `❤️ ${nome} ❤️`;
+      }
+
+      const mensagem = document.getElementById("mensagemInput").value;
+      if (mensagem) {
+        localStorage.setItem('mensagem', mensagem);
+      }
+
+      const novaData = document.getElementById("dataInicio").value;
+      if (novaData) {
+        dataInicio = new Date(novaData + "T00:00:00");
+        localStorage.setItem('dataInicio', novaData);
+      }
+
+      const gallery = document.getElementById("gallery");
+      gallery.innerHTML = "";
+      const imagens = document.getElementById("imagemInput").files;
+      const imagensArray = [];
+      if (imagens.length > 0) {
+        for (let i = 0; i < imagens.length; i++) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            gallery.appendChild(img);
+            imagensArray.push(e.target.result);
+            localStorage.setItem('imagens', JSON.stringify(imagensArray));
+          };
+          reader.readAsDataURL(imagens[i]);
+        }
+      }
+
+      const musicaInput = document.getElementById("musicaInput").files[0];
+      if (musicaInput) {
+        const audioSource = document.getElementById("audioSource");
+        audioSource.src = URL.createObjectURL(musicaInput);
+        localStorage.setItem('musica', URL.createObjectURL(musicaInput));
+        const audio = document.getElementById("audio");
+        audio.load();
+        audio.play();
+      }
+    }
+  </script>
+</body>
+</html>
